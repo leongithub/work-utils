@@ -14,5 +14,6 @@
    (:file "add-comment-to-duplicate-strings")
    (:file "find-out-lack-strings")
    (:file "copy-string-from-res1-to-res2" :depends-on ("work-utils"))
-   (:file "delete-unuse-resource" :depends-on ("work-utils"))))
+   (:file "delete-unuse-resource" :depends-on ("work-utils"))
+   (:file "find-out-new-strings" :depends-on ("work-utils"))))
 

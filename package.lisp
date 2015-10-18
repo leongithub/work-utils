@@ -9,5 +9,6 @@
 	   :remove-comment-for-strxml
 	   :find-out-lack-strings
 	   :copy-string-from-res1-to-res2
-	   :delete-unuse-resource))
+	   :delete-unuse-resource
+	   :find-out-new-strings))
 
