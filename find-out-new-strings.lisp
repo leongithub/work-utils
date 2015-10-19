@@ -75,6 +75,6 @@
     (funcall fn
 	     (svref (nth-value 1
 			       (cl-ppcre:scan-to-strings
-				"name=\"(.*)\"" str))
+				"name=\"([^\"]+)\"" str))
 		    0)
 	     str)))
