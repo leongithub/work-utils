@@ -6,6 +6,14 @@
 
 (defconstant +buffer-size+ 8192)
 
+(defun read-file (filespec)
+  "Helper function to read from file into a buffer of character, which is returned."
+  (with-open-file (in filespec
+		      :direction :input
+		      :if-does-not-exist nil
+		      :external-format :utf8)
+    (%read-body in)))
+
 ;; drakma's %read-body
 (defun %read-body (stream)
   "Helper function to read from stream into a buffer of character, which is returned."
@@ -40,3 +48,7 @@ pathnames as well."
   "if 的指代宏，在 then 和 else 的 form 中，可以用 it 来指代 test 的结果"
   `(let ((it ,test))
      (if it ,then ,else)))
+
+(declaim (inline mklist))
+(defun mklist (obj)
+  (if (listp obj) obj (list obj)))
