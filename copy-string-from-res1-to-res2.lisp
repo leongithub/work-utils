@@ -2,11 +2,6 @@
 ;; 我想移到我的应用，但是res目录下的values*目录好多，所以此程式诞生
 
 ;; (copy-string-from-res1-to-res2 "path/res/" "path/res/" "name")
-;; 目前查找只能是单行的，因为此次需求copy的都是单行的。
-
-;; 1 月 3 日更新，使用 com.gigamonkeys.pathnames 和 cl-ppcre 包重写
-;; 加入了匹配多行功能（由于是多语言，所以 lo-rLA 里找字符 \\w 匹配不了)
-;; 加入移除功能，相当于可以选择是从 res1 复制/剪切到 res2
 
 (in-package #:work-utils)
 
@@ -26,10 +21,10 @@
 
 (defun find-out-strings (filespec name-regex &optional deletep)
   (let ((file-string (read-file filespec))
-	(lst))
-    (cl-ppcre:do-matches-as-strings (str name-regex file-string)
-      (push str lst))
-    (if deletep
+	(lst (cl-ppcre:all-matches-as-strings name-regex
+					      file-string
+					      :sharedp t)))
+    (if (and lst deletep)
 	(with-open-file (out filespec
 			     :direction :output
 			     :if-exists :supersede
@@ -44,7 +39,7 @@
     (cl-ppcre:create-scanner
      (concatenate
       'string
-      "[^\\n]*<string.*name=\""
+      "(?:^[ \\t]*<!--(?:(?!-->).)*-->\\s?\\n)?^[ \\t]*<string(-array)? name=\""
       (if (= (length names) 1)
 	  (car names)
 	  (concatenate 'string
@@ -55,7 +50,9 @@
 			   (push "|" lst))
 			 (apply #'concatenate 'string (cdr lst)))
 		       ")"))
-      "\"( [a-zA-Z]+=\"\\w*\")*>[^<]*</string>"))))
+      "\"(?: [a-zA-Z]+=\"\\w*\")*>.*?</string(?(1)\\1)>")
+     :single-line-mode t
+     :multi-line-mode t)))
 
 (defun add-content-to-file (filepath content)
   (with-open-file (in filepath
